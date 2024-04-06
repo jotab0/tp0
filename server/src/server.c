@@ -3,12 +3,12 @@
 int main(void) {
 	logger = log_create("log.log", "Servidor", 1, LOG_LEVEL_DEBUG);
 
-	int server_fd = iniciar_servidor();
+	int server_fd = iniciar_servidor(); //se crea socket de servidor
 	log_info(logger, "Servidor listo para recibir al cliente");
-	int cliente_fd = esperar_cliente(server_fd);
-
+	int cliente_fd = esperar_cliente(server_fd); 	//se crea el socket de conexión una													//con cliente
+													// vez conectado con el cliente
 	t_list* lista;
-	while (1) {
+	while (1) { //Bucle que queda esperando la operación
 		int cod_op = recibir_operacion(cliente_fd);
 		switch (cod_op) {
 		case MENSAJE:

@@ -16,9 +16,10 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 	return magic;
 }
 
-int crear_conexion(char *ip, char* puerto)
+int crear_conexion(char *ip, char* puerto) 	//Crea el socket de cliente y lo conecta con el servidor, devuelve el socket conectado 
+											// OK
 {
-	struct addrinfo hints;
+	struct addrinfo hints; 
 	struct addrinfo *server_info;
 
 	memset(&hints, 0, sizeof(hints));
@@ -26,24 +27,34 @@ int crear_conexion(char *ip, char* puerto)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-	getaddrinfo(ip, puerto, &hints, &server_info);
+	int err = getaddrinfo(ip, puerto, &hints, &server_info);
+
+	if (err != 0){
+		printf("Error al crear conexion");
+		exit(-2);
+	}
 
 	// Ahora vamos a crear el socket.
 	int socket_cliente = 0;
 
+	socket_cliente = socket(server_info->ai_family,
+		server_info->ai_socktype,
+		server_info->ai_protocol);
+
 	// Ahora que tenemos el socket, vamos a conectarlo
 
+	connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen); //conecta socket
 
 	freeaddrinfo(server_info);
 
 	return socket_cliente;
 }
 
-void enviar_mensaje(char* mensaje, int socket_cliente)
+void enviar_mensaje(char* mensaje, int socket_cliente) //Esta función manda string como mensaje
 {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 
-	paquete->codigo_operacion = MENSAJE;
+	paquete->codigo_operacion = MENSAJE;  //Acá se le da la info al while de que tiene que hacer
 	paquete->buffer = malloc(sizeof(t_buffer));
 	paquete->buffer->size = strlen(mensaje) + 1;
 	paquete->buffer->stream = malloc(paquete->buffer->size);
